@@ -1,4 +1,4 @@
-package com.example.myapplication
+           package com.example.myapplication
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,12 +14,13 @@ private const val CHANNEL_ID = "ForegroundService Kotlin"
 
 class ForegroundService : Service() {
 
-    private val mHandler: Handler? = Handler()
+    private val mHandler: Handler? = Handler(android.os.Looper.getMainLooper())
     private lateinit var mRunnable: Runnable
 
     companion object {
         var running = false
         private lateinit var handlerCallback: Handler
+        var contador = 0
 
         fun startService(
             context: Context,
@@ -38,6 +39,8 @@ class ForegroundService : Service() {
             context.stopService(stopIntent)
             running = false
         }
+
+
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -62,6 +65,7 @@ class ForegroundService : Service() {
     /**
      * Simula una tarea corriendo en segundo plano de forma indefinida hasta ser detenido explícitamente
      */
+
     private fun runTask() {
         val delayMillis = 1000 * 6L // 6 segundos
         mRunnable = Runnable {
@@ -105,8 +109,15 @@ class ForegroundService : Service() {
 
     private fun notifyNextEvent() {
         // Ocurre un evento en el servicio y se hace alguna acción
+        contador ++
         val message = handlerCallback.obtainMessage(1, "msg")
-        message.data.putString("Estado", "Tarea ejecutada con éxito")
+        message.data.putInt("Contador",contador)
         message.sendToTarget()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mHandler?.removeCallbacks(mRunnable)
     }
 }

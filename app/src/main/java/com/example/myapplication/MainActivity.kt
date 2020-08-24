@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity(), Handler.Callback {
                 true -> {
                     ForegroundService.stopService(this)
                     binding.button.text = getString(R.string.message_start)
+
+
                 }
                 false -> { // el servicio no está corriendo aún
                     ForegroundService.startService(this, getString(R.string.message_2_user), Handler(this))
@@ -34,7 +36,8 @@ class MainActivity : AppCompatActivity(), Handler.Callback {
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        Log.d("Activity", "handleMessage ${msg.data}")
+        Log.d("Activity", "handleMessage ${msg.data.get("Contador")}")
+        binding.tvContador.text=msg.data.get("Contador").toString()
         return true
     }
 }
